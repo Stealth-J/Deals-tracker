@@ -1,0 +1,56 @@
+
+{% if read_alerts %}
+
+    {% block read_alerts_loop %}
+
+        <div id="read_alert_card">
+
+            {% for alert in read_alerts %}
+
+                <div class="alert-card read mb-3 p-3 rounded shadow-sm position-relative" id = "read_alert_card{{alert.id}}">
+                    
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong class="text-truncate">{{alert.deal.name}} Alert</strong> 
+                            <p class="mb-1 text-muted small">{{ alert.time_sent|timesince }} ago</p>
+                        </div>
+
+                        <div class="d-flex align-items-center more-wrapper">
+                            <button type="button" class="btn btn-sm btn-outline-secondary toggle-more">More</button>
+                            <input type="checkbox" class="checkbox" name="alert_ids"  value="{{alert.id}}">
+                    
+                        </div>
+                    </div>
+                    
+                    <div class="alert-details mt-2">
+                        {{ alert.body }}
+                        {% if alert.deal %}
+                            <p class="mt-2"><a href="">View Deal</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% if read_alerts.has_next %}
+            <div class="text-center" id="load_more_read">
+                <button class="btn btn-outline-reds" hx-target="#load_more_read" hx-get="{% url "load-more-alerts" 'read' %}?page={{ read_alerts.next_page_number }}" hx-swap="outerHTML" hx-indicator="#spinner" hx-include="#filterForm" >Load more...</button>
+            </div>
+        {% endif %}
+
+    {% endblock %}
+
+{% else %}
+
+    <div class="alert alert-dismissible alert-read fade show fade-target" role="alert" id = "read_alert_card">
+        <strong>There are no read alerts</strong> 
+        <i class="bi bi-cancel" data-bs-dismiss="alert" class="btn-close" type="button"></i>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" ></button>
+    </div>
+
+
+{% endif %}
+
+

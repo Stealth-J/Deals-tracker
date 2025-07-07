@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg rounded-4 border-0">
+        <div class="card-body p-5">
+
+            <!-- Header with image and title -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                <div class="d-flex align-items-center">
+                <img src="{{ deal.product_image }}" alt="{{ deal.name }}" class="rounded-3 border me-3" style="width: 80px; height: 80px; object-fit: cover;" />
+                    
+                    <div>
+                        <h3 class="fw-bold mb-1">{{ deal.name }}</h3>
+                        <a href="{{ deal.url }}" class="text-primary text-decoration-none small">View Product</a>
+                    </div>
+
+                </div>
+
+                <div class="text-end mt-3 mt-md-0">
+                    <small class="text-muted">Data from:</small>
+                    <div class="fw-semibold">
+                        {{ earliest.timestamp|date:"M j, Y" }} – 
+                        {{ latest.timestamp|date:"M j, Y" }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h4 class="text-secondary">Current Price: ₦ {{ deal.current_price|intcomma }}</h4>
+            </div>
+
+            <!-- Price Graph Placeholder -->
+            <div class="bg-light p-4 rounded-4 border mb-5">
+                <h5 class="mb-3 text-secondary">Price Trend</h5>
+                <canvas id="priceHistoryChart" style="max-width: 100%;">
+                    
+                </canvas>
+            </div>     
+
+            <!-- Members Tracking -->
+            <div>
+                <h5 class="mb-3 text-secondary">Tracked by</h5>
+
+                <div class="d-flex align-items-center">
+                    {% for member in deal.members_tracking.all %}
+                        <img src="{{ member.profile.avatar|default:'https://via.placeholder.com/40' }}" alt="{{ member.username }}" title="{{ member.username }}" class="rounded-circle border border-white shadow-sm me-n2" style="width: 40px; height: 40px; object-fit: cover;" />
+                    {% empty %}
+                        <p class="text-muted">No members tracking this deal yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>  
+    </div>
+</div>
+
+
+
+<script>
+
+    const ctx = document.getElementById('priceHistoryChart');
+    
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ dates|safe }},  // Example: ["12 Jun, 10:30", "12 Jun, 11:00", ..., "19 Jun, 10:00"]
+            datasets: [{
+                label: 'Price of Product (₦)',
+                data: {{ data|safe }},
+                borderWidth: 2,
+                borderColor: 'purple',
+                pointRadius: 2,
+                pointHoverRadius: 2,
+                pointHitRadius: 15,
+                tension: 0.2, 
+                fill: false
+            }]
+        },
+        options: {
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart'
+              },
+            responsive: true,
+            scales: {
+                x: {
+                    ticks: {
+                        display: false // ❌ hide x-axis labels
+                    },
+                    grid: {
+                        display: false // ❌ remove vertical grid lines
+                    }
+                },
+                y: {
+                    beginAtZero: false,   // lets it auto fit without including too much unnecessary rubbish
+                    grid: {
+                        display: true, // ✅ show horizontal lines
+                        drawBorder: false,
+                        color: "#ccc"
+                    },
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return `₦${context.parsed.y}`;
+                        },
+                        title: function(context) {
+                            return context[0].label; // show the date
+                        }
+                    }
+                },
+                legend: {
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'line',
+                        font: {
+                            size: 17
+                        }
+                    }
+                },
+
+                {% if user.is_authenticated %}
+                    {% if user in deal.members_tracking.all %}
+
+                        
+                        annotation: {
+                            annotations: {
+                                thresholdLine: {
+                                    type: 'line',
+                                    yMin: {{ threshold }},
+                                    yMax: {{ threshold }},
+                                    borderColor: 'black',
+                                    borderWidth: 1.5,
+                                    label: {
+                                        display: true,
+                                        content: 'Threshold: ₦ {{ threshold|intcomma }}',
+                                        position: 'end',
+                                        backgroundColor: 'rgba(20, 0, 0, 0.5)',
+                                        color: 'whitesmoke',
+                                        font: {
+                                            style: 'normal',
+                                            family: 'cursive'
+                                        },
+                                        padding: 6
+                                    }
+                                }
+                            }
+                        }
+
+                    {% endif %}
+                {% endif %}
+                
+            }
+        }
+    });
+
+    
+
+</script>
+
+{% endblock %}
+

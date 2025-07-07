@@ -1,0 +1,34 @@
+<div id="unread_container" hx-swap-oob = "afterbegin">
+    {% for alert in unread_alerts %}
+
+        <div class="alert-card unread mb-3 p-3 rounded shadow-sm position-relative" >
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <strong><i class="bi bi-bell-fill text-purples"></i> {{alert.deal.name}}</strong> {{ alert.id }}
+                    <p class="mb-1 text-muted small">{{ alert.time_sent|timesince }} ago</p>
+                </div>
+
+                <div class="more-wrapper">
+                    <button class="btn btn-sm btn-outline-secondary toggle-more">More</button>
+                    <button class="btn btn-sm btn-outline-success mark-read-btn" title="mark as read" hx-post="{% url "load_read_alert" alert.id %}" hx-target="#readAlerts" hx-on:htmx:after-on-load="this.closest('.alert-card').remove()" hx-swap="afterend" hx-include="#filterForm">
+                        <i class="bi bi-bookmark-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-alert-btn" title="delete alert" hx-post= "{% url "delete_alert" alert.id %}" hx-on:htmx:after-on-load="this.closest('.alert-card').remove()" hx-include="#filterForm"> 
+                        <i class="bi bi-trash"></i>
+                    </button>
+            
+                </div>
+                
+            
+            </div>
+            <div class="alert-details mt-2">
+                {{ alert.body }}
+                {% if alert.deal %}
+                    <p class="mt-2"><a href="">View Deal</a></p>
+                {% endif %}
+            </div>
+        </div>
+
+    {% endfor %}
+    
+</div>

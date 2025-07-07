@@ -1,0 +1,83 @@
+
+{% if unread_alerts %}
+
+    <div class="d-flex align-items-center">
+
+        <h5 class="text-purples mt-4 mb-3 ">New Alerts</h5>
+
+    
+        <div class="ms-auto">
+            {% if user.alerts.unread %}
+                <a href="{% url "load_read_alert" 0 %}" class="btn">
+                    <i class="bi bi-journal-check" style="font-size: 18px;" ></i>
+                    Mark all as read
+                </a>
+                
+            {% else %}
+                <button class="border-0 btn" disabled>
+                    <i class="bi bi-check2 " style="font-size: 18px;"></i>
+                    Read
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="unread_container">
+    
+        {% block unread_alerts_loop %}
+
+            {% for alert in unread_alerts %}
+
+                <div class="alert-card unread mb-3 p-3 rounded shadow-sm position-relative" >
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong><i class="bi bi-bell-fill text-purples text-truncate"></i> {{alert.deal.name}}</strong>
+                            <p class="mb-1 text-muted small">{{ alert.time_sent|timesince }} ago</p>
+                        </div>
+
+                        <div class="more-wrapper">
+                            <button class="btn btn-sm btn-outline-secondary toggle-more">More</button>
+                            <button class="btn btn-sm btn-outline-success mark-read-btn" title="mark as read" hx-post="{% url "load_read_alert" alert.id %}" hx-target="#read_alert_card" hx-on:htmx:after-on-load="this.closest('.alert-card').remove()" hx-swap="afterend" hx-include="#filterForm">
+                                <i class="bi bi-bookmark-check"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-alert-btn" title="delete alert" hx-post= "{% url "delete_alert" alert.id %}" hx-on:htmx:after-on-load="this.closest('.alert-card').remove()" hx-include="#filterForm"> 
+                                <i class="bi bi-trash"></i>
+                            </button>
+                    
+                        </div>
+                        
+                    
+                    </div>
+                    <div class="alert-details mt-2">
+                        {{ alert.body }}
+                        {% if alert.deal %}
+                            <p class="mt-2"><a href="">View Deal</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                
+            {% endfor %}
+                
+            {% if unread_alerts.has_next %}
+                <div class="text-center" id="load_more_unread">
+                    <button class="btn btn-outline-purples" hx-get="{% url "load-more-alerts" 'unread' %}?page={{ unread_alerts.next_page_number }}" hx-target="#load_more_unread" hx-swap="outerHTML" hx-indicator="#spinner" hx-include="#filterForm" >Load more...</button>
+                </div>
+            {% endif %}
+
+        {% endblock %}
+
+
+    </div>
+
+{% else %}
+
+    <div class="alert alert-dismissible fade show alert-unread fade-target" role="alert">
+        <strong>There are no unread alerts</strong> 
+        <i class="bi bi-cancel" data-bs-dismiss="alert" class="btn-close" type="button"></i>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" ></button>
+    </div>
+
+{% endif %}
+
+

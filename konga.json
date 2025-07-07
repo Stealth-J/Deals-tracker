@@ -1,0 +1,380 @@
+
+{
+    "initialProps": {
+        "pageProps": {
+            "addsonData": [
+            ],
+            "category_id": 2902,
+            "productID": "6275389",
+            "data": {
+                "recommendations": [
+                ],
+                "states": [
+                    {
+                        "id": 1061493586,
+                        "name": "Abia"
+                    },
+                    {
+                        "id": 1061493587,
+                        "name": "Abuja"
+                    },
+                    {
+                        "id": 1061493588,
+                        "name": "Adamawa"
+                    },
+                    {
+                        "id": 1061493589,
+                        "name": "Akwa Ibom"
+                    },
+                    {
+                        "id": 1061493590,
+                        "name": "Anambra"
+                    },
+                    {
+                        "id": 1061493591,
+                        "name": "Bauchi"
+                    },
+                    {
+                        "id": 1061493592,
+                        "name": "Bayelsa"
+                    },
+                    {
+                        "id": 1061493593,
+                        "name": "Benue"
+                    },
+                    {
+                        "id": 1061493594,
+                        "name": "Borno"
+                    },
+                    {
+                        "id": 1061493595,
+                        "name": "Cross River"
+                    },
+                    {
+                        "id": 1061493596,
+                        "name": "Delta"
+                    },
+                    {
+                        "id": 1061493597,
+                        "name": "Ebonyi"
+                    },
+                    {
+                        "id": 1061493598,
+                        "name": "Edo"
+                    },
+                    {
+                        "id": 1061493599,
+                        "name": "Ekiti"
+                    },
+                    {
+                        "id": 1061493600,
+                        "name": "Enugu"
+                    },
+                    {
+                        "id": 1061493601,
+                        "name": "Gombe"
+                    },
+                    {
+                        "id": 1061493602,
+                        "name": "Imo"
+                    },
+                    {
+                        "id": 1061493603,
+                        "name": "Jigawa"
+                    },
+                    {
+                        "id": 1061493604,
+                        "name": "Kaduna"
+                    },
+                    {
+                        "id": 1061493605,
+                        "name": "Kano"
+                    },
+                    {
+                        "id": 1061493606,
+                        "name": "Katsina"
+                    },
+                    {
+                        "id": 1061493607,
+                        "name": "Kebbi"
+                    },
+                    {
+                        "id": 1061493609,
+                        "name": "Kwara"
+                    },
+                    {
+                        "id": 1061493610,
+                        "name": "Lagos"
+                    },
+                    {
+                        "id": 1061493611,
+                        "name": "Nasarawa"
+                    },
+                    {
+                        "id": 1061493612,
+                        "name": "Niger"
+                    },
+                    {
+                        "id": 1061493613,
+                        "name": "Ogun"
+                    },
+                    {
+                        "id": 1061493614,
+                        "name": "Ondo"
+                    },
+                    {
+                        "id": 1061493615,
+                        "name": "Osun"
+                    },
+                    {
+                        "id": 1061493616,
+                        "name": "Oyo"
+                    },
+                    {
+                        "id": 1061493617,
+                        "name": "Plateau"
+                    },
+                    {
+                        "id": 1061493618,
+                        "name": "Rivers"
+                    },
+                    {
+                        "id": 1061493619,
+                        "name": "Sokoto"
+                    },
+                    {
+                        "id": 1061493620,
+                        "name": "Taraba"
+                    },
+                    {
+                        "id": 1061493621,
+                        "name": "Yobe"
+                    },
+                    {
+                        "id": 1061493622,
+                        "name": "Zamfara"
+                    }
+                ],
+                "product": {
+                    "sku": 6275389,
+                    "name": "Kids Unisex Cardigan With Hoodie-black",
+                    "brand": "Vilgo",
+                    "description": "\u003cp\u003eTrendy unisex cardigan for Children.We provide the best quality of clothes suitable for every occasion and very affordable.\u003c/p\u003e\n\u003cp\u003eIt comes with a hoodie and is perfect for going out on a cold day.\u003c/p\u003e",
+                    "short_description": "\u003cul style=\"color: #333333; font-size: 15px; font-family: Arial, \u0026quot; background-color: #ffffff;\"\u003e\n\u003cli\u003eSuperior Quality\u003c/li\u003e\n\u003cli\u003eProtect from cold.\u003c/li\u003e\n\u003cli\u003eEasy to wash\u003c/li\u003e\n\u003cli\u003eAge 4-6 years\u003c/li\u003e\n\u003c/ul\u003e",
+                    "image_thumbnail": "/Y/A/4634_1695631575.jpg",
+                    "image_full": "/Y/A/4634_1695631575.jpg",
+                    "images": [
+                        "/Y/A/4634_1695631575.jpg",
+                        "/Y/G/4634_1695631630.jpg",
+                        "/K/G/4634_1695631794.jpg"
+                    ],
+                    "product_type": "configurable",
+                    "status": 1,
+                    "price": 9500,
+                    "deal_price": null,
+                    "special_price": 9500,
+                    "original_price": 15000,
+                    "final_price": null,
+                    "url_key": "vilgo-kids-unisex-cardigan-with-hoodie-black-6275389",
+                    "visibility": 4,
+                    "new_from_date": null,
+                    "new_to_date": null,
+                    "konga_fulfilment_type": "SHQ",
+                    "has_after_sales_service": false,
+                    "is_free_shipping": false,
+                    "is_pay_on_delivery": null,
+                    "pickup": true,
+                    "express_delivery": false,
+                    "max_return_period": 7,
+                    "warranty": {
+                        "period": "",
+                        "text": "",
+                        "has_warranty": 1
+                    },
+                    "seller": {
+                        "id": 4634,
+                        "name": "Vilgo Solutions",
+                        "banner": "/images/clickToUpload.jpg",
+                        "url": "vilgo-solutions",
+                        "is_premium": false,
+                        "is_konga": false,
+                        "city": "Oshodi ",
+                        "state": "Lagos",
+                        "country": "NGA",
+                        "phone_number": "",
+                        "email": "julietonyejurunwa@yahoo.com",
+                        "ratings": {
+                            "merchant_id": 4634,
+                            "seller_since": "11 Years",
+                            "quantity_sold": 539,
+                            "quality": {
+                                "one_star": 1,
+                                "two_star": 2,
+                                "three_star": 4,
+                                "four_star": 4,
+                                "five_star": 16,
+                                "average": 4.2,
+                                "percentage": 84,
+                                "number_of_ratings": 27
+                            },
+                            "communication": {
+                                "one_star": 1,
+                                "two_star": 4,
+                                "three_star": 6,
+                                "four_star": 3,
+                                "five_star": 8,
+                                "average": 3.6,
+                                "percentage": 72,
+                                "number_of_ratings": 22
+                            },
+                            "delivery_percentage": 62,
+                            "delivered_orders": 364,
+                            "total_ratings": 27
+                        },
+                        "initial": "V"
+                    },
+                    "variants": {
+                        "attributes": [
+                            {
+                                "id": 1008,
+                                "code": "color",
+                                "label": "Colour",
+                                "options": [
+                                    {
+                                        "code": "color",
+                                        "id": 614,
+                                        "value": "Black"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 1019,
+                                "code": "baby_sizes",
+                                "label": "Baby Sizes",
+                                "options": [
+                                    {
+                                        "code": "baby_sizes",
+                                        "id": 1341,
+                                        "value": "4 - 6 Years"
+                                    }
+                                ]
+                            }
+                        ],
+                        "products": [
+                            {
+                                "sku": 6275388,
+                                "price": 15000,
+                                "special_price": 9500,
+                                "qty": 1,
+                                "image_thumbnail_path": null,
+                                "image_path": null,
+                                "in_stock": true,
+                                "backorders": false,
+                                "options": [
+                                    {
+                                        "code": "color",
+                                        "id": 614,
+                                        "value": "Black"
+                                    },
+                                    {
+                                        "code": "baby_sizes",
+                                        "id": 1341,
+                                        "value": "4 - 6 Years"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "stock": {
+                        "in_stock": true,
+                        "quantity": 0,
+                        "quantity_sold": 0,
+                        "min_sale_qty": 1,
+                        "max_sale_qty": 0,
+                        "backorders": false
+                    },
+                    "categories": [
+                        {
+                            "id": 8,
+                            "name": "Baby, Kids and Toys",
+                            "url_key": "/category/baby-kids-toys-8",
+                            "position": 9
+                        },
+                        {
+                            "id": 2748,
+                            "name": "Kids Clothing and Accessories",
+                            "url_key": "/category/kids-clothing-accessories-2748",
+                            "position": 0
+                        },
+                        {
+                            "id": 2856,
+                            "name": "Fashion for Boys",
+                            "url_key": "/category/fashion-for-boys-2856",
+                            "position": 5
+                        },
+                        {
+                            "id": 2902,
+                            "name": "Hoodies, Sweatshirts \u0026 Cardigans",
+                            "url_key": "/category/hoodies-sweatshirts-cardigans-2902",
+                            "position": 0
+                        }
+                    ],
+                    "product_rating": {
+                        "quality": {
+                            "one_star": 0,
+                            "two_star": 0,
+                            "three_star": 0,
+                            "four_star": 0,
+                            "five_star": 0,
+                            "average": 0,
+                            "percentage": 0,
+                            "number_of_ratings": 0
+                        },
+                        "communication": {
+                            "one_star": 0,
+                            "two_star": 0,
+                            "three_star": 0,
+                            "four_star": 0,
+                            "five_star": 0,
+                            "average": 0,
+                            "percentage": 0,
+                            "number_of_ratings": 0
+                        },
+                        "delivery_percentage": 0,
+                        "delivered_orders": 0,
+                        "total_ratings": 0
+                    },
+                    "product_reviews": [
+                    ],
+                    "frontend_attribute_groups": [
+                        {
+                            "frontend_attributes": [
+                                {
+                                    "attribute_label": "Brand",
+                                    "attribute_value": "Vilgo"
+                                }
+                            ],
+                            "group_name": "Product Information",
+                            "group_id": 22215
+                        }
+                    ],
+                    "allow_installment": 0,
+                    "warehouse_location_regions": null,
+                    "custom_options": null,
+                    "is_official_store_product": 0,
+                    "tags": {
+                        "konga_promo_label": [],
+                        "non_returnable": false
+                    },
+
+                    "weight": null,
+                    "addons": []
+                },
+                "deepLinkData": {
+                    "type": "product",
+                    "id": 6275389
+                }
+            }
+        }
+    }
+}

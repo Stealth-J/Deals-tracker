@@ -1,0 +1,69 @@
+<div class="card shadow rounded-4 border-0 px-4 pt-5 pb-4 mx-auto" style="max-width: 700px;" >
+
+    <div class="text-center">
+        <img src="{{user.profile.avatar}}" 
+             class="rounded-circle mb-3 border border-3" 
+             style="width: 100px; height: 100px; object-fit: cover;"
+             alt="Profile Avatar">
+        <h4 class="fw-bold text-secondary mb-0">@{{ user.username }}</h4>
+        <small class="text-muted">Joined on {{ user.profile.created_at|date:"F j, Y" }}</small>
+      </div>
+    
+      <hr class="my-4">
+    
+      <div class="row text-dark">
+        <div class="col-md-6 mb-3">
+          <h6 class="text-uppercase text-secondary fw-semibold mb-1">Full Name</h6>
+          <p class="mb-0">{{ user.profile.full_name|default:"Not set" }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <h6 class="text-uppercase text-secondary fw-semibold mb-1">Email</h6>
+          <p class="mb-0 text-success">{{ user.email }}</p>
+        </div>
+    
+        <div class="col-md-6 mb-3">
+          <h6 class="text-uppercase text-secondary fw-semibold mb-1">Alerts</h6>
+          <p class="mb-0">
+            {% if user.profile.notifications_enabled %}
+              <span class="text-success">Enabled</span>
+            {% else %}
+              <span class="text-danger">Disabled</span>
+            {% endif %}
+          </p>
+        </div>
+    
+        <div class="col-md-6">
+          <h6 class="text-uppercase text-secondary fw-semibold mb-1">Deals Currently Tracking</h6>
+          <p class="mb-0">{{ user.user_deals.all.count }}</p>
+        </div>
+
+        <div class="col-md-6">
+          <h6 class="text-uppercase text-secondary fw-semibold mb-1">Total Deals Tracked</h6>
+          <p class="mb-6">{{ user.profile.total_deals_tracked }}</p>
+        </div>
+
+        <div class="col-md-6">
+          <h6 class="text-uppercase text-secondary fw-semibold mb-1">Autodelete Alerts </h6>
+          <p class="mb-6">
+            {% if user.profile.alerts_delete %}
+              <span class="text-success">Enabled</span>
+            {% else %}
+              <span class="text-danger">Disabled</span>
+            {% endif %}
+          </p>
+        </div>
+  
+      </div>
+      <hr>
+  
+      
+      <div class="d-flex justify-content-end gap-3 mt-4" id="hoverBtns">
+          <a hx-get="{% url 'edit_profile' %}" hx-target="#profile-card" class="btn btn-outline-dark btn-sm rounded-circle" title="Edit Profile">
+            <i class="bi bi-pencil-square"></i>
+          </a>
+          <a href="{% url 'account_change_password' %}"  class="btn btn-outline-dark btn-sm rounded-circle" title="Reset Password">
+            <i class="bi bi-shield-lock"></i>
+          </a>
+      </div>
+
+</div>

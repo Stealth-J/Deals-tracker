@@ -1,0 +1,854 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real time deals tracker</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Manrope:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Sacramento&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "styles.css" %}">
+
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Notyf -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
+
+
+    <!--Htmx and Hyperscript-->
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.min.js" integrity="sha384-t4DxZSyQK+0Uv4jzy5B0QyHyWQD2GFURUmxKMBVww9+e2EJ0ei/vCvv7+79z0fkr" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws/dist/ws.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+
+    <!--Chart js-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+
+
+<style>
+    input[type = "text"], input[type = "email"], input[type = "password"] {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        border-radius: 0;
+        box-shadow: none;
+        outline: none;
+        padding: 0.4rem 0.4rem;  
+        font-size: 1.25rem;
+        line-height: 1.2;
+        background: transparent;
+        transition: border-color 0.3s ease;
+      }
+      
+      input[type = "text"]:focus, input[type = "email"]:focus, input[type = "password"]:focus  {
+        border-bottom: 1px solid #333; 
+        box-shadow: none;             
+      }
+      input::placeholder {
+        color: #aaa       
+      }
+
+    #backToTopBtn {
+        position: fixed;
+        bottom: 40px;
+        right: 30px;
+        z-index: 999;
+        font-size: 18px;
+        background-color: rgba(0, 0, 0, 0.3); /* transparent black */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 12px 16px;
+        cursor: pointer;
+        display: none; /* hidden by default */
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    #backToTopBtn:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+        transform: scale(1.1);
+    }
+    
+
+    .fade-target {
+        opacity: 1;
+        transition: opacity 1s ease-out;
+      }
+      
+    .fade-out {
+        opacity: 0;
+    }
+      
+      
+    .text-purples{
+        color: #4B0082;
+    }
+
+    .text-oranges{
+        color: orange;
+    }
+    
+    
+    .btn-reds {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #8B0000; /* darkred hex */
+        --bs-btn-border-color: #8B0000;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #a30000; /* slightly lighter than darkred */
+        --bs-btn-hover-border-color: #a30000;
+        --bs-btn-focus-shadow-rgb: 139, 0, 0; /* red-toned shadow */
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #750000;
+        --bs-btn-active-border-color: #750000;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #8B0000;
+        --bs-btn-disabled-border-color: #8B0000;
+    }
+    
+    .btn-outline-reds {
+        --bs-btn-color: #8B0000;
+        --bs-btn-border-color: #8B0000;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #8B0000;
+        --bs-btn-hover-border-color: #8B0000;
+        --bs-btn-focus-shadow-rgb: 139, 0, 0;
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #750000;
+        --bs-btn-active-border-color: #750000;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: #8B0000;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #8B0000;
+        --bs-gradient: none;
+    }
+    
+    .btn-lightblue {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #89BFF8;
+        --bs-btn-border-color: #89BFF8;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #63A9F3; /* Slightly deeper blue for hover */
+        --bs-btn-hover-border-color: #63A9F3;
+    
+        --bs-btn-focus-shadow-rgb: 137, 191, 248; /* match base bg in RGB */
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #4C9BEF; /* Even deeper blue for active */
+        --bs-btn-active-border-color: #4C9BEF;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #89BFF8;
+        --bs-btn-disabled-border-color: #89BFF8;
+    }
+    
+    .btn-skybubble {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #89BFF8;
+        --bs-btn-border-color: #89BFF8;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #63A9F3;
+        --bs-btn-hover-border-color: #63A9F3;
+    
+        --bs-btn-focus-shadow-rgb: 137, 191, 248;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #4C9BEF;
+        --bs-btn-active-border-color: #4C9BEF;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #89BFF8;
+        --bs-btn-disabled-border-color: #89BFF8;
+    }
+
+    .btn-peachrose {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #F48CA5;
+        --bs-btn-border-color: #F48CA5;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #e06d8d;
+        --bs-btn-hover-border-color: #e06d8d;
+    
+        --bs-btn-focus-shadow-rgb: 244, 140, 165;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #cc5f7c;
+        --bs-btn-active-border-color: #cc5f7c;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #F48CA5;
+        --bs-btn-disabled-border-color: #F48CA5;
+    }
+
+    .btn-matchatea {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #B2E5AA;
+        --bs-btn-border-color: #B2E5AA;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #9ddc92;
+        --bs-btn-hover-border-color: #9ddc92;
+    
+        --bs-btn-focus-shadow-rgb: 178, 229, 170;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #87d27b;
+        --bs-btn-active-border-color: #87d27b;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #B2E5AA;
+        --bs-btn-disabled-border-color: #B2E5AA;
+    }
+
+    .btn-violetwave {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #A076F9;
+        --bs-btn-border-color: #A076F9;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #8a5eed;
+        --bs-btn-hover-border-color: #8a5eed;
+    
+        --bs-btn-focus-shadow-rgb: 160, 118, 249;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #774bdb;
+        --bs-btn-active-border-color: #774bdb;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #A076F9;
+        --bs-btn-disabled-border-color: #A076F9;
+    }
+
+    .btn-mandarinflash {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #FF914D;
+        --bs-btn-border-color: #FF914D;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #ff7a26;
+        --bs-btn-hover-border-color: #ff7a26;
+    
+        --bs-btn-focus-shadow-rgb: 255, 145, 77;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #e86d1f;
+        --bs-btn-active-border-color: #e86d1f;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #FF914D;
+        --bs-btn-disabled-border-color: #FF914D;
+    }
+
+    .btn-emeraldmint {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #3ED598;
+        --bs-btn-border-color: #3ED598;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #30c08a;
+        --bs-btn-hover-border-color: #30c08a;
+    
+        --bs-btn-focus-shadow-rgb: 62, 213, 152;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #28ac7a;
+        --bs-btn-active-border-color: #28ac7a;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #3ED598;
+        --bs-btn-disabled-border-color: #3ED598;
+    }
+
+    .btn-bluelagoon {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #2ACFCF;
+        --bs-btn-border-color: #2ACFCF;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #20b8b8;
+        --bs-btn-hover-border-color: #20b8b8;
+    
+        --bs-btn-focus-shadow-rgb: 42, 207, 207;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #1ca4a4;
+        --bs-btn-active-border-color: #1ca4a4;
+    
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #2ACFCF;
+        --bs-btn-disabled-border-color: #2ACFCF;
+    }
+
+    .btn-outline-hotpink {
+        --bs-btn-color: #FF4D9D;
+        --bs-btn-border-color: #FF4D9D;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #FF4D9D;
+        --bs-btn-hover-border-color: #FF4D9D;
+    
+        --bs-btn-focus-shadow-rgb: 255, 77, 157;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #e0438b;
+        --bs-btn-active-border-color: #e0438b;
+    
+        --bs-btn-disabled-color: #FF4D9D;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #FF4D9D;
+    }
+
+    .btn-outline-muddybrown {
+        --bs-btn-color: #8B5E3C;
+        --bs-btn-border-color: #8B5E3C;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #8B5E3C;
+        --bs-btn-hover-border-color: #8B5E3C;
+    
+        --bs-btn-focus-shadow-rgb: 139, 94, 60;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #774f33;
+        --bs-btn-active-border-color: #774f33;
+    
+        --bs-btn-disabled-color: #8B5E3C;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #8B5E3C;
+    }
+
+    .btn-outline-winered {
+        --bs-btn-color: #A8324A;
+        --bs-btn-border-color: #A8324A;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #A8324A;
+        --bs-btn-hover-border-color: #A8324A;
+    
+        --bs-btn-focus-shadow-rgb: 168, 50, 74;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #922b3f;
+        --bs-btn-active-border-color: #922b3f;
+    
+        --bs-btn-disabled-color: #A8324A;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #A8324A;
+    }
+
+    .btn-outline-midnight {
+        --bs-btn-color: #2E3A59;
+        --bs-btn-border-color: #2E3A59;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #2E3A59;
+        --bs-btn-hover-border-color: #2E3A59;
+    
+        --bs-btn-focus-shadow-rgb: 46, 58, 89;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #232d44;
+        --bs-btn-active-border-color: #232d44;
+    
+        --bs-btn-disabled-color: #2E3A59;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #2E3A59;
+    }
+
+    .btn-outline-dustycoral {
+        --bs-btn-color: #C26A5A;
+        --bs-btn-border-color: #C26A5A;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #C26A5A;
+        --bs-btn-hover-border-color: #C26A5A;
+    
+        --bs-btn-focus-shadow-rgb: 194, 106, 90;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #a75a4d;
+        --bs-btn-active-border-color: #a75a4d;
+    
+        --bs-btn-disabled-color: #C26A5A;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #C26A5A;
+    }
+
+    .btn-outline-forestpine {
+        --bs-btn-color: #2F5743;
+        --bs-btn-border-color: #2F5743;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #2F5743;
+        --bs-btn-hover-border-color: #2F5743;
+    
+        --bs-btn-focus-shadow-rgb: 47, 87, 67;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #244636;
+        --bs-btn-active-border-color: #244636;
+    
+        --bs-btn-disabled-color: #2F5743;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #2F5743;
+    }
+
+    .btn-outline-berryblast {
+        --bs-btn-color: #701F76;
+        --bs-btn-border-color: #701F76;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #701F76;
+        --bs-btn-hover-border-color: #701F76;
+    
+        --bs-btn-focus-shadow-rgb: 112, 31, 118;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #5d1a61;
+        --bs-btn-active-border-color: #5d1a61;
+    
+        --bs-btn-disabled-color: #701F76;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #701F76;
+    }
+
+    .btn-outline-deepteal {
+        --bs-btn-color: #004D4D;
+        --bs-btn-border-color: #004D4D;
+    
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #004D4D;
+        --bs-btn-hover-border-color: #004D4D;
+    
+        --bs-btn-focus-shadow-rgb: 0, 77, 77;
+    
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #003f3f;
+        --bs-btn-active-border-color: #003f3f;
+    
+        --bs-btn-disabled-color: #004D4D;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #004D4D;
+    }    
+
+    .btn-purples {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #4B0082;
+        --bs-btn-border-color: #4B0082;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #5d00a6;
+        --bs-btn-hover-border-color: #0a58ca;
+        --bs-btn-focus-shadow-rgb: 49, 132, 253;
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #5d00a3
+        --bs-btn-active-border-color: #5d00a3;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #4B0082;
+        --bs-btn-disabled-border-color: #4B0082;
+    }
+    .btn-outline-purples {
+        --bs-btn-color: #4B0082;
+        --bs-btn-border-color: #4B0082;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #4B0082;
+        --bs-btn-hover-border-color: #4B0082;
+        --bs-btn-focus-shadow-rgb: 13, 110, 253;
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #4B0082;
+        --bs-btn-active-border-color: #4B0082;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: #4B0082;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #4B0082;
+        --bs-gradient: none;
+    }
+
+    .text-deepdanger {
+        color: #8B0000 !important; /* Deep red (DarkRed) */
+    }    
+    
+    .ringing {
+        animation: ring 1s infinite;
+    }
+    
+    @keyframes ring {
+        0% { transform: rotate(0); }
+        10% { transform: rotate(15deg); }
+        20% { transform: rotate(-10deg); }
+        30% { transform: rotate(15deg); }
+        40% { transform: rotate(-10deg); }
+        50% { transform: rotate(7deg); }
+        60% { transform: rotate(-5deg); }
+        70% { transform: rotate(0); }
+        100% { transform: rotate(0); }
+    }
+
+    .custom-alert {
+        background-color: #f2f2f2;
+        color: #333;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        pointer-events: none;
+    }
+    
+    .custom-alert.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    
+    .custom-alert.hide {
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+    }
+    .custom-alert.hide.remove{
+        max-height: 0;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    #global-loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(240, 240, 240, 0.4); /* Light grey overlay */
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        pointer-events: all;
+        user-select: none;
+    }
+      
+    .loading-gif {
+        width: 70px; /* Adjust size if needed */
+        height: auto;
+    }
+
+    .social-btn {
+        transition: all 0.3s ease;
+        padding: 0.3rem 0.9rem; /* Reduced padding */
+    }
+    
+    .social-btn:hover {
+        background-color: #212529; /* Bootstrap dark */
+        color: white !important;
+    }
+     
+    .toast-warning {
+        color: #212529 !important;
+    }
+
+    .notyf__message{
+        font-family: "Fredoka", sans-serif;
+    }
+      
+
+</style>
+</head>
+<body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-ext="ws" class="d-flex flex-column min-vh-100">
+
+    {% if user.is_authenticated %}
+        <div ws-connect="/ws/test/"></div>
+    {% endif %}
+
+    {% include "partials/navbar.html" %}
+
+    <div class="container mt-3">
+
+        <div hx-get="{% url "message" %}" hx-trigger = "message from:body">
+            {% include "partials/messages.html" %}
+        </div>
+
+
+        {% block content %}
+    
+        {% endblock %}
+
+        {% if messages %}
+            <div id="django-messages" style="display: none;">
+                {% for message in messages %}
+                    <div
+                        class="reload-msg"
+                        data-type="{{ message.level_tag }}"
+                        data-message="{{ message|escapejs }}">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+
+        
+    </div>
+
+    {% block scripts %}
+
+    {% endblock %}
+
+    <div id="global-loading-overlay" style="display: none;">
+        <img src="{% static "images/loading-money.gif" %}" alt="Loading..." class="loading-gif">
+    </div>        
+
+    <button class="btn" id="backToTopBtn"><i class="bi bi-arrow-up"></i></button>
+
+    
+    <footer id="footer" class="footer mt-auto" ws-connect="ws/deals/updates"
+        style="background-color: whitesmoke; font-family: 'Manrope', sans-serif; padding: 1rem 0; ">
+        <div class="container">
+            <div class="row justify-content-between">
+
+            <!-- Left: Contact -->
+            <div class="col-md-5">
+                <h5 class="fw-semibold mb-2">Contact Us</h5>
+                <p class="mb-1">+234 812 345 6789</p>
+                <p>+234 701 234 5678</p>
+            </div>
+
+            <!-- Right: Email -->
+            <div class="col-md-5 text-md-end">
+                <h5 class="fw-semibold mb-2">Email</h5>
+                <p>support@dealtracker.com</p>
+            </div>
+            </div>
+
+            <!-- Social Media -->
+            <div class="row  justify-content-center text-center">
+            <div class="col-3">
+                <a href="#" class="d-inline-block border border-dark btn text-dark social-btn">
+                <i class="bi bi-facebook fs-5"></i>
+                </a>
+            </div>
+            <div class="col-3">
+                <a href="#" class="d-inline-block border border-dark btn text-dark social-btn">
+                <i class="bi bi-twitter-x fs-5"></i>
+                </a>
+            </div>
+            <div class="col-3">
+                <a href="#" class="d-inline-block border border-dark btn text-dark social-btn">
+                <i class="bi bi-linkedin fs-5"></i>
+                </a>
+            </div>
+            </div>
+
+            <!-- Address + Copyright -->
+            <div class="text-center " style="font-family: 'Dancing Script', cursive; margin-top: 32px;">
+            <p class="mb-1">42 Market Street, Lagos, Nigeria</p>
+            <p style="font-family: 'Manrope', sans-serif;">&copy; 2025 DealTracker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+</html>
+
+<script>
+    const notyf = new Notyf({
+        duration: 6000,               // Show for 5 seconds
+        ripple: false,                // No ripple effect
+        position: { x: 'left', y: 'bottom' },  // Top-left corner
+        types: [
+          {
+            type: 'success',
+            background: '#228B22',  // forest green
+            icon: {
+              className: 'bi bi-check-circle-fill',
+              tagName: 'i',
+              color: 'white'
+            }
+          },
+          {
+            type: 'error',
+            background: '#8B0000',     // red
+            icon: {
+              className: 'bi bi-x-circle-fill',
+              tagName: 'i',
+              color: 'white'
+            }
+          },
+          {
+            type: 'warning',
+            background: '#fff3cd',     // yellow
+            className: 'toast-warning',
+            icon: {
+              className: 'bi bi-exclamation-triangle-fill',
+              tagName: 'i',
+              color: 'black'
+            }
+          },
+          {
+            type: 'info',
+            background: '#191970',     // cyan blue
+            icon: {
+              className: 'bi bi-info-circle-fill',
+              tagName: 'i',
+              color: 'white'
+            }
+          }
+        ]
+    });
+
+    function showAndClearMsgs(){
+        
+        const messages = document.querySelectorAll('.htmx-msg');
+    
+        messages.forEach(el => {
+            const type = el.dataset.type || 'info';
+            const msg = el.dataset.message || '';
+        
+            notyf.open({ type, message: msg });
+            el.remove(); // Clean up after showing
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', showAndClearMsgs);
+    document.body.addEventListener('htmx:afterSwap', showAndClearMsgs);
+
+      
+
+    let spanElement = document.getElementById('numberofUnread')
+    let filterTitle = document.getElementById("filterTitle")
+    
+    function initPopovers() {
+        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+        popovers.forEach(el => new bootstrap.Popover(el));
+    }
+    
+    document.addEventListener('DOMContentLoaded', initPopovers);
+    document.body.addEventListener('htmx:afterSwap', initPopovers)
+    
+    
+
+    // to prevent that error that shows when theres an active btn in an hidden item
+    document.addEventListener("hide.bs.modal", function (event) {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });    
+
+    let loadingTimeout;
+    let loadingCancelled;
+
+    document.body.addEventListener('htmx:configRequest', function() {
+        loadingCancelled = false
+
+        loadingTimeout = setTimeout(() => {
+            if (loadingCancelled) return;
+
+            document.getElementById('global-loading-overlay').style.display = 'flex';
+        }, 400); // prevent flash on fast loads
+    });
+  
+    document.body.addEventListener('htmx:afterRequest', function() {
+        loadingCancelled = true
+        clearTimeout(loadingTimeout);
+        document.getElementById('global-loading-overlay').style.display = 'none';
+    });
+
+    
+    
+    // For scrolling things into focus
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('fade-out');
+
+                    setTimeout(() => {
+                        entry.target.style.display = "none"
+                    }, 500)
+                  }, 2600); // fades after 3 seconds
+                  
+            }
+        });
+    });
+    
+    function observeAlerts(){
+        document.querySelectorAll('.alert.alert-dismissible').forEach(el => {
+            observer.observe(el);
+        });
+    }
+
+
+    observeAlerts();
+    
+
+    document.addEventListener('update_bell_number', function (e) {
+        if (e.detail.unreadCount > 99){
+            spanElement.innerHTML = "99+"
+        } else {
+            spanElement.innerHTML = e.detail.unreadCount
+        };
+        
+        observeAlerts();
+    })
+    
+
+    document.addEventListener('filtered_results', function(e) {
+        setTimeout(() => {
+            observeAlerts();
+        }, 1000)
+
+    });
+
+
+    document.addEventListener('check_for_new_alerts', function (e) {
+        if (e.detail.remove_number_on_bell === true){
+            spanElement.remove()
+        }
+        
+        setTimeout(() => {
+            observeAlerts();
+        }, 1000)
+    })
+
+
+    const backToTopBtn = document.getElementById("backToTopBtn");
+
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+            backToTopBtn.style.display = "block";
+        } else {
+            backToTopBtn.style.display = "none";
+        }
+    });
+
+    backToTopBtn.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+
+</script>
+ 

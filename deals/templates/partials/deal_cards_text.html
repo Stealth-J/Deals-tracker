@@ -1,0 +1,61 @@
+{% load humanize %}
+
+{% for deal in updated_deals %}
+
+    <div id = "price_container{{deal.id}}" hx-swap-oob = "outerHTML">
+        
+        <h5 class="card-title fw-semibold text-dark mb-2 text-truncate" style="font-family: 'Manrope', sans-serif;">
+            {{ deal.name }}
+          </h5>
+  
+          <p class="card-text mb-1" style="font-family: 'Raleway', sans-serif;">
+            {% if deal.old_price %}
+                <span class="text-muted text-decoration-line-through">₦ {{ deal.old_price|intcomma }}</span>
+            {% endif %}
+          </p>
+  
+          <p class="card-text d-flex justify-content-between align-items-center mb-2" style="font-family: 'Poppins', sans-serif;">
+            <span class="">
+              ₦ {{ deal.current_price|intcomma }}
+  
+              {% if deal.increase == "equals" %}
+                <i class="bi bi-dash text-secondary"></i>
+              {% elif deal.increase %}
+                <i class="bi bi-caret-down-fill" style="color: #28c76f;"></i>
+                <span class="text-success fs-sm">{{ deal.change }}</span>
+              {% else %}
+                <i class="bi bi-caret-up-fill text-danger"></i>
+                <span class="text-danger fs-sm">+{{ deal.change }}</span>
+              {% endif %}
+            </span>
+  
+            <span class="d-flex align-items-center gap-2">
+              <a href="{% url 'product-detail' deal.slug %}" class="btn border-0 p-0" title="Price History">
+                <i class="bi bi-graph-up"></i>
+              </a>
+              <i class="bi bi-people-fill text-purples fs-5"></i>
+              <span class="fw-semibold text-purples small">{{ deal.members_tracking.count }}</span>
+            </span>
+          </p>
+  
+          <p class="small text-muted pt-1 mb-2 d-flex align-items-center gap-1" style="font-family: 'Poppins', sans-serif;">
+            <i class="bi bi-clock-history"></i> {{ deal.last_checked|naturaltime }}
+          </p>
+    
+    </div>
+
+{% endfor %}
+
+{% for user_deal in userdeals %}
+    <div id="current_price_container{{ user_deal.id }}" hx-swap-oob = "outerHTML">
+        <p class="card-text mb-1">Current Price: <strong>₦ {{ user_deal.deal.current_price|intcomma }}
+            {% if user_deal.deal.increase == True %} 
+                <i class="bi bi-arrow-down-circle-fill text-success"></i>
+            {% elif user_deal.deal.increase == False %}
+                <i class="bi bi-arrow-up-circle-fill text-danger"></i>
+            {% endif %}
+        </strong></p> 
+
+    </div>
+
+{% endfor %}

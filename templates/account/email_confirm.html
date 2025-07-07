@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-info alert-dismissible d-flex justify-content-between align-items-center" role="alert">
+        <span class="mb-0">{% trans "Thank you for confirming your email address." %}</span>
+        <a href="{% url 'account_login' %}" class="btn btn-sm btn-outline-primary ms-3">Login</a>
+    </div>
+    
+</div>
+{% endblock %}

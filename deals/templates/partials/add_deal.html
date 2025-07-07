@@ -1,0 +1,17 @@
+<hr>
+<form method="POST" class="text-center" hx-post="{% url "add_user_deal" deal.id %}" hx-target="#dealCard{{deal.id}}" hx-swap = "outerHTML">
+    <label for="">Set threshold price</label>
+   
+    <div class="input-group">
+        <input type="number" step="any" class="form-control py-0" name="threshold" value="{{deal.current_price}}">
+
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-sm btn-primary mt-2 w-100">Track</button>
+        </div>
+        <div class="input-group-append">
+            <button hx-get="{% url "cancel_deal_tracker" deal.id  %}" hx-target="#dealCard{{deal.id}}" hx-swap="outerHTML" class="btn btn-sm btn-danger mt-2 w-100">Cancel</button>
+        </div>
+    </div>
+    <p class="text-secondary" style="font-size: 14px">If alerts are enabled, you would be alerted once price of this product is below set threshold</p>
+
+</form>

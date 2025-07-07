@@ -1,0 +1,7 @@
+Hello {{ user.username }},
+
+Please click the link below to confirm your email address for our-logo.com:
+
+{{ activate_url }}
+
+If you didn't create an account, please ignore this message.

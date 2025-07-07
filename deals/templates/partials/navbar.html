@@ -1,0 +1,76 @@
+{% load custom_filters %}
+
+<nav class="navbar navbar-expand-lg py-3 px-5" style="background-color: #4B0082;">
+    <div class="container-fluid">
+      <a class="navbar-brand text-warning fw-bold" href="/">DealsTracker</a>
+      
+      <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'index' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'deals' %}">View Popular deals</a>
+          </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'dashboard' %}">Track Deals</a>
+            </li>
+            {% endif %}
+        </ul>
+        
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'profile' %}">
+                  Profile
+
+                </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{% url 'account_logout' %}">Logout</a>
+            </li>
+
+           
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{% url 'account_login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{% url 'account_signup' %}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+          {% block bell_icon %}
+            {% if user.alerts.unread %}
+              <li class="nav-item mx-3" id="bellIcon" hx-swap-oob = "true">
+                <a class="nav-link" href="{% url 'alerts' %}">
+                  <span class="position-relative d-inline-block">
+                    <i class="bi bi-bell-fill text-light fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" id="numberofUnread" >
+                      {{ user.alerts.alert_count|shorten_notifications }} 
+                    </span>
+                  </span>
+                </a>
+              </li>
+            {% else %}
+
+              <li class="nav-item mx-3 position-relative" id="bellIcon" hx-swap-oob = "true">
+                <a class="nav-link position-relative" href="{% url "alerts" %}">
+                  <i class="bi bi-bell-fill text-white fs-5 "></i>
+                </a>
+              </li>
+              
+            {% endif %}
+          {% endblock %}
+        {% endif %}
+      </ul>
+    </div>
+  </nav>

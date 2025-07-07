@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+<style>
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      animation: scroll-x 30s linear infinite;
+      width: max-content;
+    }
+
+    .form-control::placeholder{
+        color: #ccc
+    }
+    
+    .carousel-wrapper {
+      overflow: hidden;
+    }
+    
+    @keyframes scroll-x {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .card-img-top{
+        border-radius: 5px
+    }
+    
+    .card {
+        width: 100%;
+        transition: transform 0.4s ease;
+    }
+      
+    .card:hover {
+        transform: translateY(-12px);
+    }
+
+    .card-img{
+        width: 100%;
+    }
+
+    .hover-lift {
+        transition: transform 0.2s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+    }
+
+
+    .two-line-ellipsis {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        line-height: 1.2rem;
+        height: 2.4rem; 
+      }
+      
+    #modeSwitchBtn{
+        text-decoration: none;
+    }
+    #modeSwitchBtn:hover{
+        text-decoration: underline;
+    }  
+    .hero-p{
+        font-size: 1.15em;
+    }
+    .track_icon{
+        opacity: 0.3;
+        width: 2.25em;
+        height: 2.25em;
+        position: absolute;
+        top: 8px;
+        right: 8px
+    }
+    
+    input[type = "number"]{
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 0.4rem 0.4rem;  
+        font-size: 1.25rem;
+        line-height: 1.2;
+        transition: border-color 0.4s ease;
+      }
+      
+    input[type = "number"]:focus  {
+        border: 1px solid #333; 
+        box-shadow: none;             
+      }
+
+    input[type = number]::-webkit-outer-spin-button,
+    input[type = number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+      
+</style>
+
+
+<!-- Hero Section -->
+<section class="py-5" style="font-family: 'Manrope', sans-serif;" id="heroSection">
+  <div class="text-center">
+    <h1 class="display-5 text-purples fw-semibold mb-3">Track Deals Across Your Favorite Stores</h1>
+    <p class="text-muted mb-4 hero-p">Search for the best prices on Jumia and Konga, all in one place. Try the 
+        <a  data-bs-toggle="collapse" href="#directLinkForm"  role="button" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="directLinkForm" id="modeSwitchBtn">
+            direct link
+        </a> feature</p>
+
+    <div id="searchForm" class="collapse show multi-collapse">
+
+        <form class="row gx-2 gy-2 justify-content-center" >
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Search for a product..." name="search" >
+    
+                <div class="mt-2">
+                    <a href="#" class="text-muted" data-bs-toggle="modal" data-bs-target="#manualModal" style="text-decoration: none;">
+                        Need help?
+                    </a>
+                </div>
+                    
+            </div>
+            <div class="col-md-2">
+                <select class="form-select rounded-3" name="store">
+                    <option value="0" selected>Jumia</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-dark w-100 rounded-3 search_btn">Search</button>
+            </div>
+        </form>
+
+    </div>
+
+    <div class="collapse multi-collapse" id="directLinkForm">
+
+        <form class="row gx-2 gy-2 justify-content-center" >
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Enter product url..." name="url" >
+    
+                <div class="mt-2">
+                    <a href="#" class="text-muted" data-bs-toggle="modal" data-bs-target="#manualModal" style="text-decoration: none;">
+                        Need help?
+                    </a>
+                </div>
+                    
+            </div>
+            <div class="col-md-2">
+                <select class="form-select rounded-3" name="store">
+                    <option value="0" selected>Jumia</option>
+                    <option value="1" >Konga</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-dark w-100 rounded-3 search_btn">Enter</button>
+            </div>
+        </form>
+
+    </div>
+
+
+</div>
+
+</section>
+
+
+<!--Results trimmed down-->
+<section class="py-5">
+    <div class="row" id="searchResultsContainer">
+        {% if keyword %}
+
+            {% for item in items %}
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="card mx-auto shadow-sm border-0 hover-lift">
+                        <div style="height: 300px; overflow: hidden;" class="rounded-top">
+                            <img src="{{ item.src }}" class="card-img object-fit-cover" alt="Product Image" >
+
+                            {% if user.is_authenticated %}
+                                <a class="btn btn-dark rounded-circle d-flex justify-content-center align-items-center text-white track_icon" title="track product" 
+                                data-bs-toggle="modal"
+                                data-bs-target="#thresholdModal" 
+                                data-product-name="{{item.name}}" 
+                                data-product-price="{{ item.price|remove_naira }}" data-product-lowest_price= "{{ item.price|return_lowest_price}}" 
+                                data-product-image="{{item.src}}" 
+                                data-product-url="{{ item.product_url }}" 
+                                data-product-store = "{{ item.store }}" 
+                                {% if item.old_price %} 
+                                data-product-old_price="{{ item.old_price|return_lowest_price}}" 
+                                {% else %} 
+                                data-product-old_price="" 
+                                {% endif %} >
+                                    <i class="bi bi-bag-plus"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-body ">
+                            <p class="card-title two-line-ellipsis text-muted">{{ item.name }}</p>
+                            <h4 class="card-text text-muted">{{ item.price|remove_naira }} </h4>
+
+                            {% if item.old_price %}
+                                <div class="price-stack mb-4">
+                                    <span class="text-muted text-decoration-line-through">{{ item.old_price|remove_naira }}</span>
+                                    <span class="deal-badge badge bg-warning">- {{ item.price_gain }}</span>
+                                </div>
+                            {% endif%}
+
+                            <a href="{{ item.product_url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                View on page
+                            </a>
+                              
+                        </div>
+                    </div>
+                </div>
+
+
+            {% empty %}
+                <div class="text-center">
+                    <h2>No results found</h2>
+                </div>
+            {% endfor %}
+
+
+            <div class="d-flex justify-content-center">
+                <form>
+                    <input type="hidden" name="search" value="{{ request.GET.search }}">
+                    <input type="hidden" name="store" value="{{ request.GET.store }}">
+
+                    <ul class="pagination pagination-lg">
+
+                        <li class="page-item">
+                            <button type="submit" class="page-link" name="page" value="1" {% if page|lte:1 %} disabled {% endif %} >&laquo;</button>
+                        </li>
+                        <li class="page-item">
+                            <button type="submit" class="page-link" name="page" value="{{ page|minus_one }}" {% if page|lte:1 %} disabled {% endif %} >&lsaquo;</button>
+                        </li>
+
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ page }}</span>
+                        </li>
+
+                        <li class="page-item">
+                            <button type="submit" class="page-link" name="page" value="{{ page|add:1 }}" {% if page == page_limit %} disabled {% endif %}>&rsaquo;</button>
+                        </li>
+                        <li class="page-item">
+                            <button type="submit" class="page-link" name="page" value="{{ page_limit }}" {% if page == page_limit %} disabled {% endif %} >&raquo;</button>
+                        </li>
+                   
+
+                    </ul>
+
+                </form>
+            </div>
+
+        {% endif %}
+    </div>
+</section>
+  
+
+<!-- Feature Section -->
+<section class="py-5 bg-light text-center">
+  <div class="row container mx-auto">
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-wallet-fill fs-1 mb-2 text-primary"></i>
+      <h5 class="fw-semibold">Smart Search</h5>
+      <p class="text-muted small">Save a lot of money on your favourite items</p>
+    </div>
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-bell text-secondary fs-1 mb-2 "></i>
+      <h5 class="fw-semibold">Price Alerts</h5>
+      <p class="text-muted small">Get notified when your desired product drops in price.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-cart-check-fill fs-1 mb-2 text-success"></i>
+      <h5 class="fw-semibold">Easy Tracking</h5>
+      <p class="text-muted small">Track deals without switching between sites.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Product Cards -->
+<section class="py-5">
+    <h3 class="text-center fw-semibold mb-4">Trending Products</h3>
+    <div class="carousel-wrapper px-3">
+      <div class="carousel-track">
+        {% for i in "1234561234578822822829293933939396" %}
+        <div class="card shadow-sm rounded-4">
+          <img src="https://picsum.photos/seed/{{ forloop.counter }}/300/200" class="card-img-top" alt="Product Image">
+          <div class="card-body">
+            <h5 class="card-title">Product {{ forloop.counter }}</h5>
+            <p class="card-text text-muted">₦{{ forloop.counter }}0,000 - Great value!</p>
+            <a href="#" class="btn btn-outline-primary btn-sm">View Deal</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+</section>
+
+<!-- MODALS -->
+<div class="modal fade" id="manualModal" tabindex="-1" aria-labelledby="manualModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content p-4">
+        <div class="modal-header border-0">
+            <h4 class="modal-title fw-bold" id="manualModalLabel">User Guide – Welcome to DealTracker</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body" style="line-height: 1.75;">
+            <p>Thank you for choosing <strong>DealTracker</strong> — your one-stop solution for tracking the best deals across various top e-commerce platforms.</p>
+
+            <hr>
+
+            <h5 class="fw-semibold mt-4"><i class="bi bi-search"></i> Step 1: Search for a Product</h5>
+            <p>Begin by entering the name of the product you're looking for in the search bar on the homepage. You can select between <strong>Jumia</strong> or <strong>Konga</strong> as your preferred store. Our system fetches the latest price listings for your chosen item from that store.</p>
+
+            <h5 class="fw-semibold mt-4"><i class="bi bi-bag-plus-fill"></i> Step 2: Add to Your Tracking List</h5>
+            <p>Once your desired product appears in the results, click the <em>"Track this deal"</em> button. This will allow us to monitor the product and notify you of price drops or significant changes. You’ll need to be signed in to use this feature, so we can associate the tracked deal with your account.</p>
+
+            <h5 class="fw-semibold mt-4"><i class="bi bi-bar-chart"></i> Step 3: Set Your Threshold Price</h5>
+            <p>After selecting a product to track, you can optionally define a threshold price — the maximum you're willing to pay. If the product ever drops to or below this price, we'll send you an alert via email.</p>
+
+            <h5 class="fw-semibold mt-4"><i class="bi bi-app-indicator"></i> Step 4: Get Notifications</h5>
+            <p>Our background system constantly checks for updates. When a tracked product’s price changes or matches your set threshold, you’ll receive an email notification. No more checking every day — we do it for you!</p><br>
+
+            <p>Tip: You can switch to Direct Link Mode to quickly check a specific product without searching through our limited catalog. Simply copy the product URL from Jumia, switch the mode in the app, and paste the link. The app will instantly fetch and display the product details, allowing you to track it right away.</p>
+
+            <hr>
+
+            <h5 class="fw-semibold mt-5"><i class="bi bi-folder"></i> Manage Your Tracked Deals</h5>
+            <p>From your dashboard, you can view all the products you’re tracking, update threshold prices, or remove items at any time. You remain fully in control of your tracking list.</p>
+
+            <h5 class="fw-semibold mt-4"><i class="bi bi-shield-lock-fill"></i> Privacy & Data</h5>
+            <p>We respect your privacy. All tracked data is stored securely and is never shared with third parties. Your email is only used for account notifications and alerts that you control.</p>
+
+            <h5 class="fw-semibold mt-4"><i class="bi bi-tools"></i> Having Issues?</h5>
+            <p>If you run into any problems or have questions, visit our support page or reach out to us via the <strong>Contact Us</strong> section in the footer. We’re always happy to help.</p>
+
+            <hr class="my-4">
+
+
+
+            <p class="text-muted text-center small mb-0">
+            &copy; 2025 DealTracker. All rights reserved. Built to save you money.
+            </p>
+        </div>
+
+        <div class="modal-footer border-0 justify-content-center">
+            <button type="button" class="btn btn-dark px-4" data-bs-dismiss="modal">Close Guide</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="thresholdModal" tabindex="-1" aria-labelledby="thresholdModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 p-2" id="modalContent">
+    
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="thresholdModalLabel">Set Your Threshold Price</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+    
+            <div class="modal-body">
+    
+                <!-- Optional: Product Preview -->
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{% static "images/empty-product.jpg" %}" id="modalProductImage" alt="Product" class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;">
+
+                    <div>
+                        <h6 class="mb-0" id="modalProductName">Product Name</h6>
+                        <small class="text-muted" id="modalProductPrice">₦</small>
+                    </div>
+                </div>
+                <!-- Threshold Form -->
+                <form hx-post = "{% url "add_deal" %}" hx-swap="none" hx-on-htmx-after-request="bootstrap.Modal.getInstance(document.getElementById('thresholdModal')).hide()" id="thresholdForm">
+                    <div class="mb-3">
+                        <label for="threshold" class="form-label">Threshold Price (₦)</label>
+                        <input type="number" class="form-control" id="threshold" name="threshold" min="0" required _="on keyup call validateThreshold()">
+                        <div class="form-text text-deepdanger form-errors" hidden>Threshold set must be less than minimum price of product</div>
+                        <div class="form-text">You’ll be notified when the price drops below this amount.</div>
+                    </div>
+                    <input type="hidden" name="product_name">
+                    <input type="hidden" name="image">
+                    <input type="hidden" name="product_url">
+                    <input type="hidden" name="current_price">
+                    <input type="hidden" name="old_price">
+                    <input type="hidden" name="price_text">
+                    <input type="hidden" name="market_store">
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-violetwave rounded-pill">Track Price</button>
+                    </div>
+                </form>
+    
+            </div>
+    
+        </div>
+    </div>
+</div>
+  
+
+<script>
+    const directLinkForm = document.getElementById('directLinkForm');
+    const searchForm = document.getElementById('searchForm');
+    const modeSwitchBtn = document.getElementById('modeSwitchBtn');
+    const thresholdInput = document.getElementById('threshold')
+    const thresholdModal = document.getElementById('thresholdModal')
+    const thresholdForm = document.getElementById('thresholdForm')
+    
+    thresholdModal.addEventListener('show.bs.modal', (e) => {
+        trigger = e.relatedTarget
+
+        const name = trigger.getAttribute('data-product-name')
+        const price = trigger.getAttribute('data-product-price')
+        const image = trigger.getAttribute('data-product-image')
+        const old_price = trigger.getAttribute('data-product-old_price')
+        const lowest_price = trigger.getAttribute('data-product-lowest_price')
+        const url = trigger.getAttribute('data-product-url')
+        const store = trigger.getAttribute('data-product-store')
+
+        document.getElementById('modalProductPrice').textContent = `Current Price: ${price}`;
+        document.getElementById('modalProductName').textContent = name;
+        document.getElementById('modalProductImage').src = image;
+        document.querySelector('input[name = "product_name"]').value = name
+        document.querySelector('input[name = "image"]').value = image
+        document.querySelector('input[name = "product_url"]').value = url
+        document.querySelector('input[name = "current_price"]').value = lowest_price
+        document.querySelector('input[name = "old_price"]').value = old_price
+        document.querySelector('input[name = "market_store"]').value = store
+
+        if (price.includes('-')) {
+            document.querySelector('input[name = "price_text"]').value = price
+        }
+
+    })
+
+    function validateThreshold() {
+        const value = document.querySelector('input[name="current_price"]').value
+        const submitBtn = thresholdForm.querySelector('button[type = "submit"]')
+        const errorTxt = document.querySelector('.form-errors')
+        
+        if (parseInt(thresholdInput.value) <= parseInt(value)) {
+            submitBtn.disabled = false
+            errorTxt.hidden = true
+        } else if (thresholdInput.value === '') {
+            submitBtn.disabled = true
+        }
+         else {
+            submitBtn.disabled = true
+            errorTxt.hidden = false
+        }
+    }
+
+    thresholdModal.addEventListener('hide.bs.modal', (e) => {
+        thresholdInput.value = ''
+    })
+
+    function disableSearch() {
+        const collapseDiv = document.querySelectorAll('.multi-collapse')
+        
+        collapseDiv.forEach((div) => {
+            input = div.querySelector('.form-control')
+            btn = div.querySelector('.search_btn')
+            if (input.value === ''){
+                btn.disabled = true
+            } else {
+                btn.disabled = false
+            }
+        })
+    }
+
+    disableSearch()
+    document.addEventListener('keyup', disableSearch)
+  
+    directLinkForm.addEventListener('show.bs.collapse', () => {
+        modeSwitchBtn.innerHTML = 'search'
+        searchForm.querySelector('form div input.form-control').value = ''
+    });
+  
+    directLinkForm.addEventListener('hide.bs.collapse', () => {
+        modeSwitchBtn.innerHTML = 'direct link'
+        directLinkForm.querySelector('form div input.form-control').value = ''
+    });
+</script>
+  
+
+{% endblock %}

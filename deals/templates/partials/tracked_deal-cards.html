@@ -1,0 +1,39 @@
+{% load humanize %}
+
+<div class="col-md-6 col-lg-4" id="card{{ user_deal.id }}">
+    <div class="card shadow-sm h-100 border-0 rounded-4">
+        
+        <div class="card-body">
+            <a href="{% url "product-detail" user_deal.deal.slug %}" class="text-decoration-none text-dark">
+                <h5 class="card-title text-truncate">{{ user_deal.deal.name }}</h5>
+            </a>
+            <div id="current_price_container{{ user_deal.id }}">
+                <p class="card-text mb-1">Current Price: <strong>₦ {{ user_deal.deal.current_price|intcomma }}
+                    {% if user_deal.deal.increase == True %} 
+                        <i class="bi bi-arrow-down-circle-fill text-success"></i>
+                    {% elif user_deal.deal.increase == False %}
+                        <i class="bi bi-arrow-up-circle-fill text-danger"></i>
+                    {% endif %}
+                </strong></p> 
+            </div>
+            <p class="card-text text-muted">Your Threshold: ₦ {{ user_deal.threshold_price|intcomma }}</p>
+
+            <form hidden method="POST" hx-post="{% url "edit_user_deal" user_deal.deal.id %}" hx-target="#card{{ user_deal.id }}" hx-swap="outerHTML" id="editForm{{user_deal.id}}" hx-vals='{"edit_type": "dashboard"}'>
+                <div class="input-group">
+                    <input type="number" step="any" class="form-control py-0" name="threshold" value="{{user_deal.threshold_price}}">
+
+                    <div class="input-group-append">
+                        <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="d-flex justify-content-between mt-2" id="editBtns">
+                <a class="btn btn-sm btn-outline-primary" _="on click toggle @hidden on #editForm{{user_deal.id}}">Edit</a>
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfimationModal{{user_deal.id}}">Remove</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+

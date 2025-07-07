@@ -1,0 +1,6 @@
+<div id="htmx-messages">
+    {% for message in messages %}
+        <div class="htmx-msg" data-type="{{ message.level_tag }}" data-message="{{ message }}"></div>
+    {% endfor%}
+
+</div>

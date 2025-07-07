@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container my-5">
+  <div class="text-center mb-5">
+    
+    <h1 class="text-primary"> Hot Deals Just for You{% if user.is_authenticated %}, {{ user.first_name|default:user.username }}!{% endif %} </h1>
+
+    <p class="text-muted fs-5">Pick what you like and start tracking your next smart buy. <i class="text-oranges bi bi-binoculars-fill"></i>
+
+    </p>
+
+    <form hx-post = "{% url "deals" %}" hx-target="#deals_container" hx-swap="outerHTML" hx-trigger="click from:.sort_btn, keyup delay:1s from:.dealsearch-input">
+
+      <div class="search-wrapper input-group">
+        <input class="form-control dealsearch-input" name="deal_search" placeholder = "Enter product's name">
+      </div>
+  
+   
+      <div aria-label="Filter buttons" class="mt-4" id="filter_sorts">
+        <button type="button" class="btn btn-light py-0 sort_btn" role="radio" aria-checked="false" tabindex="0">Profit</button>
+        <button type="button" class="btn btn-light py-0 sort_btn" role="radio" aria-checked="false" tabindex="-1">A-Z</button>
+        <button type="button" class="btn btn-light py-0 sort_btn" role="radio" aria-checked="false" tabindex="-1">Price</button>
+        <button type="button" class="btn btn-light py-0 sort_btn" role="radio" aria-checked="false" tabindex="-1">Members tracking</button>
+        <input type="hidden" name="sort" value="">
+        
+        <button class="btn p-0 border-0 bg-transparent sort_btn">
+          <img src='{% static "images/up.png" %}' class="filtering-order" >
+        </button>
+        <input type="hidden" name="order" value="asc">
+      </div>
+    </form>
+
+  </div>
+
+  {% block dealsContainer %}
+    <div class="row g-4" id="deals_container">
+
+        {% for deal in all_deals %}
+
+            {% include "partials/deals_cards.html" %}
+
+        {% endfor %}
+
+      </div>
+  {% endblock %}
+  
+</div>
+
+<style>
+
+  .btn-light.selected {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #0d6efd;
+    --bs-btn-border-color: #0d6efd;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0b5ed7;
+    --bs-btn-hover-border-color: #0a58ca;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0a58ca;
+    --bs-btn-active-border-color: #0a53be;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #0d6efd;
+    --bs-btn-disabled-border-color: #0d6efd;
+  }
+
+  h1{
+    font-family: "Sacramento", cursive;
+  }
+
+  p.text-muted{
+    font-family: "Raleway", cursive;
+  }
+
+  .deal-card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .deal-card .card-body {
+    transition: background-color 0.3s;
+  }
+
+  .deal-card:hover .card-body {
+    background-color: #f8f9fa;
+  }
+
+  i.bi{
+    font-size: 1.30rem;
+    cursor: pointer;
+  }
+
+  .filtering-order{
+    width: 2rem;      
+    height: 2rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .filtering-order:hover {
+    transform: scale(1.1);    
+    opacity: 0.85;
+  }
+
+  .search-wrapper {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
+    width: 37%;
+    margin: auto;
+  }
+  
+  .search-wrapper.show {
+    height: 40px; 
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .dealsearch-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    padding: 0.4rem 0.4rem;  
+    font-size: 1.25rem;
+    line-height: 1.2;
+    background: transparent;
+    transition: border-color 0.3s ease;
+  }
+  
+  .dealsearch-input:focus {
+    border-bottom: 1px solid #333; 
+    box-shadow: none;             
+  }
+  .dealsearch-input::placeholder {
+    color: #aaa       
+  }
+
+  .text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    min-height: 2.8em;
+    word-break: break-word;
+  }
+  
+  .fs-sm {
+    font-size: 0.875rem;
+  }
+
+  .card-text {
+    font-size: 1.3em;
+  }
+  
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+  const dealsearchBtn = document.querySelector(".bi.bi-binoculars-fill")
+  const searchBox = document.querySelector('.search-wrapper');
+
+  dealsearchBtn.addEventListener("click", () => {
+    searchBox.classList.toggle("show");
+
+    if (searchBox.classList.contains('show')) {
+      setTimeout(() => {
+        searchBox.querySelector('input').focus();
+      }, 400);    // delays the animation of focus till the input is transitioned in 
+    }
+  })
+
+  const btns = document.querySelectorAll('.btn.btn-light')
+  const sortInput = document.querySelector('input[name = "sort"]')
+
+  let clickedButton = null;
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      sortInput.value = btn.innerHTML
+      
+      btns.forEach(b => {
+        const selected = (b === btn)
+        b.classList.toggle('selected', selected)
+        b.setAttribute('aria-checked', selected)
+        b.setAttribute('tabindex', selected ? '0' : '-1')
+      })
+      
+      clickedButton = btn;
+      btn.disabled = true;
+    })
+  })
+
+  const orderBtn = document.querySelector('.bg-transparent.sort_btn')
+  const orderBtnImage = document.querySelector('.filtering-order')
+  const orderInput = document.querySelector('input[name = "order"]')
+  
+  orderBtn.addEventListener('click', () => {
+    orderBtn.disabled = true;
+
+    const imageName = orderBtnImage.getAttribute('src')
+    
+    if (imageName.includes('up.png') ) {
+      orderInput.value = 'desc'
+      orderBtnImage.setAttribute('src', 'static/images/down.png')
+    } else{
+      orderInput.value = "asc"
+      orderBtnImage.setAttribute('src', 'static/images/up.png')
+    }
+  })
+
+  document.querySelector('form').addEventListener('htmx:beforeRequest', (e) => {
+    if (clickedButton) clickedButton.disabled = true;
+    orderBtn.disabled = true;
+  })
+  document.querySelector('form').addEventListener('htmx:afterRequest', (e) => {
+    if (clickedButton) {
+      clickedButton.disabled = false;
+      clickedButton = null;
+    }
+    orderBtn.disabled = false;
+  })
+
+</script>
+
+{% endblock %}

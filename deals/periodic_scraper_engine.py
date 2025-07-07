@@ -1,0 +1,1 @@
+# def fails(url, deal)

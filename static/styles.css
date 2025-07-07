@@ -1,0 +1,80 @@
+.text-purples{
+    color: #4B0082;
+}
+  
+.ringing {
+    animation: ring 1s infinite;
+}
+
+@keyframes ring {
+    0% { transform: rotate(0); }
+    10% { transform: rotate(15deg); }
+    20% { transform: rotate(-10deg); }
+    30% { transform: rotate(15deg); }
+    40% { transform: rotate(-10deg); }
+    50% { transform: rotate(7deg); }
+    60% { transform: rotate(-5deg); }
+    70% { transform: rotate(0); }
+    100% { transform: rotate(0); }
+}
+
+.transparent-item {
+    color: rgba(255, 255, 255, 0.7); 
+    padding: 5px;
+}
+    
+
+
+.more-wrapper {
+    position: relative;
+    display: inline-flex;
+    gap: 0.5rem;
+}
+
+.mark-read-btn {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.alert-card.unread:hover .mark-read-btn {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.btn-close{
+    --bs-btn-close-bg: url(https://img.icons8.com/ios11/512/FFFFFF/delete-sign.png);
+}
+
+.alert.alert-dismissible{
+    background-color: #4B0082;
+    color: whitesmoke;
+}
+.alert-card {
+background-color: #f8f9fa;
+transition: transform 0.2s ease-in-out, background-color 0.3s;
+cursor: pointer;
+}
+.alert-card:hover {
+transform: translateX(5px);
+background-color: #f1f1f1;
+}
+
+.alert-card.unread {
+border-left: 4px solid #0d6efd;
+background-color: #e9f2ff;
+}
+.alert-card.read {
+border-left: 4px solid #6c757d;
+background-color: #f9f9f9;
+}
+
+.alert-details {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.4s ease-in-out, padding 0.3s ease-in-out;
+}
+.alert-details.show {
+max-height: 300px;
+padding-top: 10px;
+}

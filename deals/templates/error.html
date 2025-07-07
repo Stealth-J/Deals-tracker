@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content  %}
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .error-container {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-box {
+            width: 90%;
+            padding: 1rem;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        img {
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+    </style>
+
+    <div class="container error-container">
+        <div class="error-box text-center">
+            <img src="{% static 'images/error-illustration.svg' %}" alt="Oops illustration"  class="mb-3 mt-3"  style="width: 180px; max-width: 100%;" />
+
+            <h1 class="display-6 text-danger mb-3">⚠️ Oops!</h1>
+            <p class="lead mb-4">{{ message }}</p>
+
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                ← Go Back
+            </a>
+        </div>
+    </div>
+
+{% endblock %}
+

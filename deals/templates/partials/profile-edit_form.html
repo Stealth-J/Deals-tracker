@@ -1,0 +1,82 @@
+{% load widget_tweaks %}
+
+<div class="card shadow rounded-4 border-0 px-4 pt-5 pb-4 mx-auto" style="max-width: 700px;">
+    <form hx-post = "{% url "edit_profile" %}" hx-target = "#profile-card" hx-encoding ="multipart/form-data">
+
+        <div class="text-center">
+            <img src="{{user.profile.avatar}}" 
+                class="rounded-circle mb-3 border border-3" 
+                style="width: 100px; height: 100px; object-fit: cover;"
+                alt="Profile Avatar" id="avatar">
+    
+            <p>{% render_field form.image %}</p>
+    
+            <h4 class="fw-bold text-secondary mb-0">@{{ user.username }}</h4>
+            <small class="text-muted">Joined on {{ user.profile.created_at|date:"F j, Y" }}</small>
+        </div>
+    
+        <hr class="my-4">
+    
+        <div class="row text-dark">
+    
+            <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-secondary fw-semibold mb-1">Full Name</h6>
+                {% render_field form.full_name class="form-control" %}
+                {% for e in form.full_name.errors %}
+                    <p class="text-danger mt-1">{{e}}</p>
+                {% endfor %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-secondary fw-semibold mb-1">Email</h6>
+                <input type="text" class="form-control" name="user_mail" value = "{{ user.email }}">
+            </div>
+    
+            <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-secondary fw-semibold mb-1">Alerts</h6>
+                <p class="mb-0">
+                    {% render_field form.notifications_enabled %}
+                    <label for="" class="label text-dark">Email notifications enabled</label>
+                </p>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-secondary fw-semibold mb-1">Autodelete Alerts</h6>
+                <p class="mb-0">
+                    {% render_field form.alerts_delete %}
+                    <label for="" class="label text-dark">Auto-delete alerts enabled</label>
+                </p>
+            </div>
+    
+        </div>
+
+    
+        <hr>
+
+
+        <div class="d-flex justify-content-end gap-3 mt-4">
+            <button class="btn btn-sm btn-outline-success">Save Changes</button>
+            {% comment %} <button class="btn btn-sm btn-danger" href="{% url 'profile' %}">Cancel</button> {% endcomment %}
+        </div>
+
+    </form>
+
+</div>
+  
+<script>
+    if (!window.fileInputListenerAdded) {
+        const fileInput = document.querySelector('input[type="file"]');
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const image = document.querySelector('#avatar');
+    
+            if (file && file.type.includes('image')) {
+                const url = URL.createObjectURL(file);
+                image.src = url;
+            }
+        });
+        window.fileInputListenerAdded = true;
+    }
+    
+    
+</script>
+

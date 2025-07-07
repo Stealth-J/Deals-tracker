@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container my-4">
+        <h2 class="mb-4">Your Tracked Deals</h2>
+
+        {% if user_deals %}
+            <div class="row g-3">
+                {% for user_deal in user_deals %}
+                    {% include "partials/tracked_deal-cards.html" %}
+
+                    {% include "partials/delete_confirmation.html" %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You haven’t tracked any deals yet.</p>
+            <a href="{% url 'add_user_deal' %}" class="btn btn-success mt-3">Start Tracking</a>
+        {% endif %}
+    </div>
+
+
+<style>
+    h2{
+        font-family: "Raleway", cursive;
+    }
+</style>
+    
+{% endblock %}

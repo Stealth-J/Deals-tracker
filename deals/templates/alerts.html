@@ -1,0 +1,505 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex align-items-center mb-4">
+        <h2 class="">Your Alerts</h2>
+
+        <a class="ms-auto filterToggleBtn" style="cursor: pointer;" title="filter">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 30px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+            </svg>
+        </a>
+        <a hx-post="{% url "delete_alert" 0 %}" hx-target="#unreadAlerts" class="btn ms-2" hx-swap="delete" hx-on:htmx:after-on-load="document.querySelector('#readAlerts').remove()" hx-confirm="Are you sure you want to delete every alert?">
+            <i class="bi bi-trash3" style="font-size: 18px;"></i>
+            Delete all
+        </a>
+
+        
+    </div>
+
+    <div class="text-center my-3 filter-dropdown" id="filterPanel">
+        
+        <form hx-post = "{% url "alerts" %}" hx-target="#tab-content1" id="filterForm"  hx-vals='js:{tab: checkActiveTab()}' >
+            
+            <div class="row mb-3">
+                <div class="col-6 offset-3">
+                    <div class="input-group">
+                        <input type="text" placeholder="Type in product name" name="search" class="form-control" id="searchInput" hx-post="{% url "alerts" %}" hx-trigger="keyup delay:1s" hx-target="#tab-content1" hx-vals='js:{tab: checkActiveTab()}'>
+
+                        <input type="hidden" class="hidden-input">
+    
+                        <button type="submit" class="btn btn-outline-success px-4"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex">
+                
+                <input type="text" class="form-control" id="customDateInput" readonly placeholder="Select a date range" name="date_filter" />
+    
+                <button type="submit" class="btn btn-success" id="filter_submitBtn">Filter</button>
+            </div>
+            
+            <div class="mt-2" role="group" >
+                
+                <input type="radio" name="date_range" id="last_year" class="btn-check">
+                <label for="last_year" data-offset="-365"  class="btn btn-outline-purples py-1 mb-2">Last Year</label>
+
+                <input type="radio" name="date_range"  id="month" class="btn-check">
+                <label for="month" class="btn btn-outline-purples py-1 mb-2"><i class="bi bi-calendar-month"></i> Months</label>
+
+                <input type="radio" name="date_range"  id="last_week" class="btn-check">
+                <label for="last_week" data-offset="-7" class="btn btn-outline-purples py-1 mb-2">Last Week</label>
+
+                <input type="radio" name="date_range" id="two_days_ago" class="btn-check">
+                <label for="two_days_ago" data-offset="-2" class="btn btn-outline-purples py-1 mb-2">2 Days Ago</label>
+
+                <input type="radio" name="date_range"  id="today" class="btn-check">
+                <label for="today" data-offset="0" class="btn btn-outline-purples py-1 mb-2">Today</label>
+
+                <input type="radio" name="date_range"  id="no_date" class="btn-check" checked>
+                <label for="no_date" data-offset="none" class="btn btn-outline-purples py-1 mb-2">All</label>
+
+            </div>
+    
+            <div role="group" class="my-4" id="monthsContainer" data-months = "{{months}}" >
+    
+                {% for month in months %}
+                    <input type="checkbox"  id="{{month}}" class="btn-check" value="{{ month }}" name="month" data-offset="{{month}}">
+                    <label for="{{ month }}" class="btn btn-sm btn-outline-dark mb-2">{{ month }}</label>
+                {% endfor %}
+    
+            </div>
+
+        </form>
+
+
+    </div>
+
+    
+    
+    <ul class="nav nav-pills mb-3" id="alerts-tab" role="tablist">
+        <li>
+            <button class="nav-link active" id="unread-tab" data-bs-toggle="pill" data-bs-target="#tab-content1" type="button" role="tab" aria-selected = "true">Unread</button>
+        </li>
+        <li>
+            <button class="nav-link" id="read-tab" data-bs-toggle="pill" data-bs-target="#tab-content2" type="button" role="tab" aria-selected = "false">Read</button>
+        </li>
+    </ul>
+      
+
+    
+    <div class="tab-content">
+        
+        <div class="tab-pane fade show active" id="tab-content1">
+
+            {% block tab1 %}
+
+                <div id="unreadAlerts" class="unreadClass" hx-post="{% url "reload-unread-alerts" %}" hx-trigger="check_for_new_alerts from:body" hx-include="#filterForm">
+
+                    {% include "partials/unread_alerts.html" %}
+
+                </div>
+                
+
+            {% endblock %}
+
+        </div>
+        
+        <div class="tab-pane fade" id="tab-content2">
+
+            {% block tab2 %}
+                
+                <div class="d-flex align-items-center">
+                    <h5 class="text-secondary mt-4 mb-3 ">Read</h5>   
+                    
+                    {% if read_alerts %}
+
+                        <div class="ms-auto position-relative action-btns d-flex align-items-center">
+                            <span id="selectedNumber" class="selected-number slide-target"></span>
+
+                            <a class="btn border-0 deleteBtn slide-target" id="deleteBtn" data-bs-toggle="modal" data-bs-target="#alertDeleteModal">
+                                <i class="bi bi-trash" style="font-size: 18px;"></i>
+                            </a>
+
+                            <a class="btn border-0 selectAllBtn slide-target" id="selectAllBtn">
+                                <i class="bi bi-check-all" style="font-size: 18px;"></i>
+                                Select All
+                            </a>
+
+                            <a class="btn selectBtn border-0" id="selectBtn">
+                                <i class="bi bi-check2-square" style="font-size: 18px;"></i>
+                                Select 
+                            </a>
+                        </div>
+
+                    {% endif %}
+                    
+
+                </div>         
+                <div id="readAlerts">
+                        
+                    <form hx-post = '{% url "delete_alert" 'list' %}' hx-trigger = "click from:#yesBtn" hx-swap = "none" hx-on:htmx:after-on-load="removeDeletedItems()">
+
+                        {% include "partials/alerts_loop.html" %}
+
+                    </form>
+
+                </div>
+
+            {% endblock %}
+
+        </div>
+
+        
+
+    </div>
+
+
+    {% include "partials/alert_delete_modal.html" %}
+
+
+    <div class="text-center mt-4">
+        <img src="https://i.pinimg.com/originals/df/d2/68/dfd2683c9701642c776e31d3b0d603a9.gif"  class="htmx-indicator" style="width: 120px;" id="spinner" alt="">
+    </div>
+    
+
+</div>
+
+<style>
+    .selected-number{
+        font-family: "Raleway", sans-serif
+        font-weight: 800;
+        font-style: normal;
+      }
+
+    .slide-target {
+        opacity: 0;
+        transform: translateX(20px);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        pointer-events: none;
+    }
+    
+    .slide-target.slide-in {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+    }
+    
+
+    .checkbox{
+        height: 20px;
+        width: 20px;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .checkbox.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    #monthsContainer {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.4s ease, opacity 0.4s ease;
+    }
+    
+    #monthsContainer.show {
+        max-height: 200px; /* adjust as needed */
+        opacity: 1;
+    }
+
+    .more-wrapper {
+        position: relative;
+        display: inline-flex;
+        gap: 0.5rem;
+    }
+    
+    .mark-read-btn {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.3s ease;
+    }
+    
+    .alert-card.unread:hover .mark-read-btn {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .delete-alert-btn{
+        opacity: 0;
+        transform: translateX(20px);
+        transition: all 0.3s ease;
+    }
+
+    .alert-card:hover .delete-alert-btn {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .btn-close{
+        --bs-btn-close-bg: url(https://img.icons8.com/ios11/512/FFFFFF/delete-sign.png);
+    }
+
+    .alert.alert-dismissible{
+        background-color: #4B0082;
+        color: whitesmoke;
+    }
+
+    .alert.alert-read{
+        background-color: darkred !important;
+        color: whitesmoke;
+    }
+    .alert-card {
+        background-color: #f8f9fa;
+        transition: transform 0.2s ease-in-out, background-color 0.3s;
+        cursor: pointer;
+    }
+    .alert-card:hover {
+        transform: translateX(5px);
+        background-color: #f1f1f1;
+    }
+
+    .alert-card.unread {
+        border-left: 4px solid #4b0082;
+        background-color: #e9f2ff;
+    }
+    .alert-card.read {
+        border-left: 4px solid red;
+        background-color: #f9f9f9;
+    }
+
+    .alert-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out, padding 0.3s ease-in-out;
+    }
+    .alert-details.show {
+        max-height: 300px;
+        padding-top: 10px;
+    }
+    .filter-dropdown {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.4s ease, opacity 0.4s ease;
+    }
+    
+    .filter-dropdown.expanded {
+        max-height: 1000px; /* big enough for the full content */
+        opacity: 1;
+    }
+</style>
+
+
+<script>
+    document.getElementById('read-tab').classList.add('text-danger')
+    const selectBtn = document.getElementById('selectBtn')
+    const selectAllBtn = document.getElementById('selectAllBtn')
+    const deleteBtn = document.getElementById('deleteBtn')
+    const noOfSelected = document.getElementById('selectedNumber')
+
+    let isSelectMode = false;
+
+    function toggleActionBtnsVisibility(mode){
+        document.getElementById('selectAllBtn').classList.toggle('slide-in', mode)
+        document.getElementById('selectedNumber').classList.toggle('slide-in', mode)
+        document.getElementById('deleteBtn').classList.remove('slide-in')
+    }
+    
+    function updateDeleteBtnVisibility() {
+        if (!selectBtn) return;
+
+        const anyChecked = Array.from(document.querySelectorAll('input.checkbox')).some(cb => cb.checked);
+        document.getElementById('deleteBtn').classList.toggle('slide-in', anyChecked);
+
+        const selected = Array.from(document.querySelectorAll('input.checkbox:checked'))
+        document.getElementById('selectedNumber').innerHTML = `${selected.length} selected`
+    }
+
+    function applyCheckStateToNewElements(mode, resetState) {
+        let checkBoxes = document.querySelectorAll('input.checkbox')
+        
+        checkBoxes.forEach(checkbox => {
+            checkbox.classList.toggle('visible', mode)
+            if (resetState === true){
+                checkbox.checked = false;
+            }
+        })
+    }
+
+    function applyCheckedStateAfterHTMXRequest(){
+        document.querySelectorAll('#load_more_read .btn-outline-reds, .more-wrapper .mark-read-btn').forEach(el => {
+            el.addEventListener('htmx:afterRequest', () => {
+                applyCheckStateToNewElements(isSelectMode)
+                updateDeleteBtnVisibility();
+            })
+        })
+    }
+
+    document.addEventListener('click', function(e) {
+        let readBtn = document.getElementById('read-tab')
+        if (e.target) {
+
+            if (e.target.closest('#selectBtn')){
+                let resetCheckedState = true;
+                isSelectMode = !isSelectMode
+    
+                applyCheckStateToNewElements(isSelectMode, resetCheckedState)
+                toggleActionBtnsVisibility(isSelectMode)
+            }
+    
+            else if (e.target.closest('#deleteBtn')){
+    
+                const selected = Array.from(document.querySelectorAll('input.checkbox:checked'))
+                document.querySelector('p.delete-text').innerHTML = `Delete alerts (${selected.length})?`
+            }
+    
+            else if (e.target.closest('#selectAllBtn')){
+    
+                let checkBoxes = Array.from(document.querySelectorAll('input.checkbox'))
+                let allChecked = checkBoxes.every(cb => cb.checked)
+                
+                checkBoxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked
+                })
+                updateDeleteBtnVisibility();
+            }
+
+            else if (e.target.matches(".toggle-more")) {
+                const details = e.target.closest(".alert-card").querySelector(".alert-details")
+                details.classList.toggle('show');
+            }
+    
+            else if (e.target.closest(".filterToggleBtn")){
+                const filterPanel = document.querySelector(".filter-dropdown")
+                filterPanel.classList.toggle('expanded')
+            }
+
+            else if (e.target.matches('#read-tab')) {
+                readBtn.classList.remove('text-danger')
+                readBtn.classList.add('bg-danger', 'text-light')
+            }
+            else if (e.target.matches('#unread-tab')) {
+                readBtn.classList.remove('bg-danger', 'text-light')
+                readBtn.classList.add('text-danger')
+            }
+
+        }
+    })
+
+    document.addEventListener('change', function(e) {
+
+        if (e.target && e.target.closest('input.checkbox')){
+            updateDeleteBtnVisibility()
+        }
+    })
+
+
+    applyCheckedStateAfterHTMXRequest()
+    
+    document.body.addEventListener('htmx:afterRequest', applyCheckedStateAfterHTMXRequest)
+
+
+    function removeDeletedItems() {
+        document.querySelectorAll('input[name=alert_ids]:checked').forEach(cb => {
+            cb.closest('.alert-card').remove()
+        })
+        updateDeleteBtnVisibility()
+    }
+
+
+    function checkActiveTab() {
+        const activeTab = document.querySelector('#alerts-tab .nav-link.active');
+        let returned = 0;  
+    
+        if (activeTab?.id === 'unread-tab') {
+            returned = 1;
+        } else if (activeTab?.id === 'read-tab') {
+            returned = 2;
+        }
+    
+        return returned;
+    }
+
+    
+    document.querySelector('.hidden-input').value = 'must win'
+
+    const tabButtons = document.querySelectorAll('#alerts-tab .nav-link');
+    tabButtons.forEach(btn => {
+        btn.addEventListener('shown.bs.tab', checkActiveTab);
+    });
+
+
+
+    document.querySelectorAll("[data-offset]").forEach(btn => {
+        const outpuT = document.getElementById('customDateInput')
+        const months = document.getElementById("monthsContainer")
+        const id_ = btn.getAttribute("for")
+        
+        btn.addEventListener("click", () => {
+            if (isNaN(Number(btn.dataset.offset))){        
+                if (btn.dataset.offset === "none"){
+                    outpuT.value = ""
+                    outpuT.placeholder = "Select a date range"
+                }
+                else{
+                    const monthsList = []
+                    document.querySelectorAll('input[name = "month"]:checked').forEach(month => {
+                        monthsList.push(month.dataset.offset)
+                    })
+                    outpuT.value = monthsList.join(", ")
+
+                }
+            }
+            else{
+                const offsetDays = parseInt(btn.dataset.offset);
+                const date = new Date();
+                date.setDate(date.getDate() + offsetDays);
+
+                if (id_ === "last_year"){
+                    const year_ = date.toISOString().split('-')[0]
+                    outpuT.value = year_;
+                } else {
+                    const isoString = date.toISOString().split("T")[0]; // yyyy-mm-dd
+                    outpuT.value = isoString;
+                }
+
+            }
+        });
+    });
+
+
+    document.getElementById("month").addEventListener("change", function () {
+        const monthsContainer = document.getElementById("monthsContainer");
+        const outpuT = document.getElementById('customDateInput')
+        
+        monthsContainer.classList.add("show", );
+        outpuT.value = "";
+        outpuT.placeholder = "Pick months to filter for"
+    });
+
+    document.querySelectorAll('input[name = "date_range"]').forEach(btn => {
+        if (btn.id === "month") return;
+        
+        btn.addEventListener("click", function (e) {
+            const monthsContainer = document.getElementById("monthsContainer");
+            monthsContainer.classList.remove("show", );
+
+            document.querySelectorAll('input[name = "month"]:checked').forEach(month => {
+                month.checked = false;
+            })
+        })
+    })
+    
+
+
+
+</script>
+{% endblock %}
